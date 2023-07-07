@@ -2,8 +2,8 @@ package com.poc.user;
 
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
-import com.poc.user.dao.impl.mongodb.entity.UserEntity;
-import com.poc.user.dao.impl.mongodb.repository.UserRepository;
+import com.poc.user.jpa.document.UserDocument;
+import com.poc.user.jpa.repository.UserRepository;
 import com.poc.user.domain.request.ParticularUserInfo;
 import com.poc.user.domain.request.UserInfo;
 import com.poc.user.domain.request.UserInfoList;
@@ -104,14 +104,14 @@ class UserApplicationIntegrationTest  {
 
     @Test
     public void givenNewUser_whenSaved_userExistsOnDB() {
-        UserEntity testUserEntity=new UserEntity();
-        testUserEntity.setId("test"); testUserEntity.setEmail("test@test.com"); testUserEntity.setFirstname("testName");
-        testUserEntity.setLastname("testLastname"); testUserEntity.setUsername("testuser");
-        testUserEntity.setActive(true);
+        UserDocument testUserDocument =new UserDocument();
+        testUserDocument.setId("test"); testUserDocument.setEmail("test@test.com"); testUserDocument.setFirstname("testName");
+        testUserDocument.setLastname("testLastname"); testUserDocument.setUsername("testuser");
+        testUserDocument.setActive(true);
         
-        UserEntity userEntity=mongoTemplate.save(testUserEntity).block();
+        UserDocument userDocument =mongoTemplate.save(testUserDocument).block();
 
-        assertThat(userEntity.getId()).isNotNull();
+        assertThat(userDocument.getId()).isNotNull();
         assertEquals(1, userRepository.findAll().count().block());
     }
 
@@ -127,23 +127,23 @@ class UserApplicationIntegrationTest  {
                 .expectStatus().isCreated()
                 .expectBody(UserResponse.class)
                 .returnResult().getResponseBody();
-        UserEntity userEntity= userRepository.findById(userResponse.getId()).block();
+        UserDocument userDocument = userRepository.findById(userResponse.getId()).block();
 
         assertEquals(testUserInfo.getEmail(),userResponse.getEmail());
         assertEquals(testUserInfo.getFirstname(),userResponse.getFirstname());
         assertEquals(testUserInfo.getLastname(),userResponse.getLastname());
         assertEquals(testUserInfo.getUsername(),userResponse.getUsername());
-        assertTrue(userEntity.isActive()); assertNull(userEntity.getDeactivatedTimestamp());
+        assertTrue(userDocument.isActive()); assertNull(userDocument.getDeactivatedTimestamp());
         assertNotNull(userResponse.getCreatedDateTime());
         assertNull(userResponse.getLastModifiedDateTime());
     }
 
     @Test
     void givenSpecificUserExists_whenReadUser_thenUserInfoReadSuccessfully() {
-        UserEntity testUserEntity=new UserEntity();
-        testUserEntity.setId("test"); testUserEntity.setEmail("test@test.com"); testUserEntity.setFirstname("testName");
-        testUserEntity.setLastname("testLastname"); testUserEntity.setUsername("testuser"); testUserEntity.setActive(true);
-        mongoTemplate.insert(testUserEntity).block();
+        UserDocument testUserDocument =new UserDocument();
+        testUserDocument.setId("test"); testUserDocument.setEmail("test@test.com"); testUserDocument.setFirstname("testName");
+        testUserDocument.setLastname("testLastname"); testUserDocument.setUsername("testuser"); testUserDocument.setActive(true);
+        mongoTemplate.insert(testUserDocument).block();
 
         UserResponse userResponse= webTestClient.get()
                 .uri(USERS_ENDPOINT_PATH+"/test")
@@ -152,10 +152,10 @@ class UserApplicationIntegrationTest  {
                 .expectBody(UserResponse.class)
                 .returnResult().getResponseBody();
 
-        assertEquals(testUserEntity.getEmail(),userResponse.getEmail());
-        assertEquals(testUserEntity.getFirstname(),userResponse.getFirstname());
-        assertEquals(testUserEntity.getLastname(), userResponse.getLastname());
-        assertEquals(testUserEntity.getUsername(), userResponse.getUsername());
+        assertEquals(testUserDocument.getEmail(),userResponse.getEmail());
+        assertEquals(testUserDocument.getFirstname(),userResponse.getFirstname());
+        assertEquals(testUserDocument.getLastname(), userResponse.getLastname());
+        assertEquals(testUserDocument.getUsername(), userResponse.getUsername());
     }
 
     @Test
@@ -168,13 +168,13 @@ class UserApplicationIntegrationTest  {
 
     @Test
     void givenSpecificUsersExists_whenUsersEdited_thenAllFieldsUpdatedSuccessfully() {
-        UserEntity userEntity1=new UserEntity();
-        userEntity1.setId("test"); userEntity1.setEmail("test@test.com"); userEntity1.setFirstname("testName");
-        userEntity1.setLastname("testLastname"); userEntity1.setUsername("testuser"); userEntity1.setActive(true);
-        UserEntity userEntity2=mongoTemplate.save(userEntity1).block();
-        userEntity2.setId("test2");
-        userEntity2.setEmail("test2@test.com");
-        mongoTemplate.save(userEntity2).block();
+        UserDocument userDocument1 =new UserDocument();
+        userDocument1.setId("test"); userDocument1.setEmail("test@test.com"); userDocument1.setFirstname("testName");
+        userDocument1.setLastname("testLastname"); userDocument1.setUsername("testuser"); userDocument1.setActive(true);
+        UserDocument userDocument2 =mongoTemplate.save(userDocument1).block();
+        userDocument2.setId("test2");
+        userDocument2.setEmail("test2@test.com");
+        mongoTemplate.save(userDocument2).block();
 
         ParticularUserInfo userInfo1=new ParticularUserInfo();
         userInfo1.setId("test");userInfo1.setEmail("newTest@test.com");userInfo1.setUsername("testuser");
@@ -212,14 +212,16 @@ class UserApplicationIntegrationTest  {
 
     @Test
     void givenSpecificUsersExists_whenUsersDeleted_thenUsersNotFetchedAfterDelete() {
-        UserEntity userEntity1=new UserEntity();
-        userEntity1.setId("test"); userEntity1.setEmail("test@test.com"); userEntity1.setFirstname("testName");
-        userEntity1.setLastname("testLastname"); userEntity1.setUsername("testuser");userEntity1.setActive(true);
-        UserEntity userEntity2=new UserEntity();
-        userEntity2.setId("test2"); userEntity2.setEmail("test2@test.com"); userEntity2.setFirstname("testName2");
-        userEntity2.setLastname("testLastname2"); userEntity2.setUsername("testuser2");userEntity2.setActive(true);
-        mongoTemplate.insert(userEntity1).block();
-        mongoTemplate.insert(userEntity2).block();
+        UserDocument userDocument1 =new UserDocument();
+        userDocument1.setId("test"); userDocument1.setEmail("test@test.com"); userDocument1.setFirstname("testName");
+        userDocument1.setLastname("testLastname"); userDocument1.setUsername("testuser");
+        userDocument1.setActive(true);
+        UserDocument userDocument2 =new UserDocument();
+        userDocument2.setId("test2"); userDocument2.setEmail("test2@test.com"); userDocument2.setFirstname("testName2");
+        userDocument2.setLastname("testLastname2"); userDocument2.setUsername("testuser2");
+        userDocument2.setActive(true);
+        mongoTemplate.insert(userDocument1).block();
+        mongoTemplate.insert(userDocument2).block();
 
         List<UserResponse> userReadResponse= webTestClient.get()
                 .uri(USERS_ENDPOINT_PATH+"?id=test&id=test2")

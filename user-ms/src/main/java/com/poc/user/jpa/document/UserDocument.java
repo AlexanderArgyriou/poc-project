@@ -1,11 +1,10 @@
-package com.poc.user.dao.impl.mongodb.entity;
+package com.poc.user.jpa.document;
 
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 import lombok.Data;
 /**
@@ -16,7 +15,7 @@ import lombok.Data;
  */
 @Document("user")
 @Data
-public class UserEntity {
+public class UserDocument {
 	@Id
 	private String id;
 	private String username;

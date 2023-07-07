@@ -1,6 +1,6 @@
-package com.poc.user.dao.impl.mongodb.repository;
+package com.poc.user.jpa.repository;
 
-import com.poc.user.dao.impl.mongodb.entity.UserEntity;
+import com.poc.user.jpa.document.UserDocument;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;
@@ -18,7 +18,7 @@ import java.util.List;
  * {@inheritDoc}
  */
 @Repository
-public interface UserRepository extends ReactiveCrudRepository<UserEntity, String> {
-    Mono<UserEntity> findByIdAndActiveTrue(String id);
-    Flux<UserEntity> findAllByIdInAndActiveTrue(List<String> ids);
+public interface UserRepository extends ReactiveCrudRepository<UserDocument, String> {
+    Mono<UserDocument> findByIdAndActiveTrue(String id);
+    Flux<UserDocument> findAllByIdInAndActiveTrue(List<String> ids);
 }
