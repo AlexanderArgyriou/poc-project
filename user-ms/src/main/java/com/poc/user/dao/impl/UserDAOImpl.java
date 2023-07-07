@@ -26,11 +26,15 @@ import java.util.List;
 @Slf4j
 public class UserDAOImpl implements UserDAO {
 
-    @Autowired
-    private UserRepository userRepository;
+	private final UserRepository userRepository;
+
+	private final ModelMapper modelMapper;
 
 	@Autowired
-	private ModelMapper modelMapper;
+	public UserDAOImpl(UserRepository userRepository, ModelMapper modelMapper) {
+		this.userRepository = userRepository;
+		this.modelMapper = modelMapper;
+	}
 
 	@Override
 	public Mono<UserResponse> get(String id){

@@ -9,8 +9,8 @@ services:
       container_name: user-ms
       network_mode: "host"
       depends_on:
-        - mongo
-        - kafka
+        mongo:
+          condition: service_healthy
       environment:
         - SERVER_PORT=9080
         - SPRING_APPLICATION_NAME=user-ms
@@ -21,56 +21,6 @@ services:
         - SPRING_DATA_MONGODB_USERNAME=user1
         - SPRING_DATA_MONGODB_PASSWORD=user1
         - SPRING_DATA_MONGODB_DATABASE=userDB
-        - SPRING.KAFKA.BOOTSTRAP-SERVERS=localhost:9092
-
-  registration:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: registration-ms:0.0.2-SNAPSHOT
-    container_name: registration-ms
-    network_mode: "host"
-    depends_on:
-      - kafka
-      - user
-      - notification
-    environment:
-      - SERVER_PORT=9081
-      - SPRING_APPLICATION_NAME=registration-ms
-      - SPRING.KAFKA.BOOTSTRAP-SERVERS=localhost:9092
-      - EXTERNAL_SERVICE_USER_URL="http://localhost:9080"
-
-
-  notification:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: notification-ms:0.0.2-SNAPSHOT
-    container_name: notification-ms
-    network_mode: "host"
-    depends_on:
-      - kafka
-      - fakesmtp
-    environment:
-      - SERVER_PORT=9082
-      - SPRING_APPLICATION_NAME=registration-ms
-      - SPRING.KAFKA.BOOTSTRAP-SERVERS=localhost:9092
-      - SPRING_MAIL_HOST:localhost
-      - SPRING_MAIL_PORT:25
-
-  gateway:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: gateway-ms:0.0.2-SNAPSHOT
-    container_name: gateway-ms
-    network_mode: "host"
-    depends_on:
-      - user
-      - registration
-    environment:
-      - SERVER_PORT=9090
-      - SPRING_APPLICATION_NAME=gateway-ms
 
   mongo:
     image: mongo:4.4.2
@@ -88,25 +38,3 @@ services:
     healthcheck:
       test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u root -p root --quiet) -eq 1
 
-
-  zookeeper:
-    image: zookeeper:3.7.0
-    network_mode: "host"
-    container_name: zookeeper
-
-  kafka:
-    image: obsidiandynamics/kafka
-    network_mode: "host"
-    container_name: kafka
-    environment:
-      KAFKA_ZOOKEEPER_CONNECT: "localhost:2181"
-      KAFKA_BROKER_ID: 1
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-    depends_on:
-      - zookeeper
-
-  fakesmtp:
-    image: hatamiarash7/fake-smtp:latest
-    network_mode: "host"
-    volumes:
-      - /tmp/fakemail:/output

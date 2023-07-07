@@ -19,10 +19,8 @@ import reactor.core.publisher.Mono;
 import java.util.Map;
 
 @Component
-@Order(-2)
 @Slf4j
 public class GlobalErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
-
 
     public GlobalErrorWebExceptionHandler(GlobalErrorAttributes g, ApplicationContext applicationContext,
                                           ServerCodecConfigurer serverCodecConfigurer) {

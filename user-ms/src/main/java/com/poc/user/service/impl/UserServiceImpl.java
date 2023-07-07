@@ -27,8 +27,12 @@ import java.util.Objects;
 @Slf4j
 public class UserServiceImpl implements UserService {
 
+    private final UserDAO userDAO;
+
     @Autowired
-    private UserDAO userDAO;
+    public UserServiceImpl(UserDAO userDAO) {
+        this.userDAO = userDAO;
+    }
 
     @Override
     public Mono<UserResponse> readUser(String id) {
