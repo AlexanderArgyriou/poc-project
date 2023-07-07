@@ -1,6 +1,6 @@
-package com.poc.user.jpa.repository;
+package com.poc.user.mongo.repository;
 
-import com.poc.user.jpa.document.UserDocument;
+import com.poc.user.mongo.document.UserDocument;
 import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.stereotype.Repository;
 import reactor.core.publisher.Flux;

@@ -2,8 +2,8 @@ package com.poc.user;
 
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
-import com.poc.user.jpa.document.UserDocument;
-import com.poc.user.jpa.repository.UserRepository;
+import com.poc.user.mongo.document.UserDocument;
+import com.poc.user.mongo.repository.UserRepository;
 import com.poc.user.domain.request.ParticularUserInfo;
 import com.poc.user.domain.request.UserInfo;
 import com.poc.user.domain.request.UserInfoList;

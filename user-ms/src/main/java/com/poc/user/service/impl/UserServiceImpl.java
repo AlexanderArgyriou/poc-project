@@ -8,14 +8,15 @@ import com.poc.user.domain.request.ParticularUserInfo;
 import com.poc.user.domain.request.UserInfo;
 import com.poc.user.domain.response.UserResponse;
 import com.poc.user.exception.UserNotFoundException;
-import com.poc.user.jpa.document.UserDocument;
-import com.poc.user.jpa.repository.UserRepository;
+import com.poc.user.mongo.document.UserDocument;
+import com.poc.user.mongo.repository.UserRepository;
 import com.poc.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
@@ -30,6 +31,7 @@ import java.util.Objects;
  */
 @Service("userService")
 @Slf4j
+@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -62,6 +64,7 @@ public class UserServiceImpl implements UserService {
                 .flatMap(savedEntity -> Mono.just(modelMapper.map(savedEntity, UserResponse.class)));
     }
 
+
     public Mono<UserResponse> upsertUser(String id, UserInfo user) {
         //if resource with specified id does not exist, a new resource will be created
         return userRepository.findByIdAndActiveTrue(id)
@@ -78,7 +81,6 @@ public class UserServiceImpl implements UserService {
                     return userRepository.save(entity);
                 })
                 .map(savedEntity -> modelMapper.map(savedEntity, UserResponse.class));
-
     }
 
     public Flux<UserResponse> upsertUsers(List<ParticularUserInfo> users) {

@@ -1,4 +1,4 @@
-package com.poc.user.jpa.document;
+package com.poc.user.mongo.document;
 
 
 import org.springframework.data.annotation.Id;
