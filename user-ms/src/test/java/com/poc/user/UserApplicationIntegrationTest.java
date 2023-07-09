@@ -52,25 +52,25 @@ class UserApplicationIntegrationTest  {
     @Autowired
     private ReactiveMongoTemplate mongoTemplate;
 
-    @ComponentScan
-    static class TransConfig extends AbstractReactiveMongoConfiguration {
-
-        @Bean("reactiveTransactionManager")
-        ReactiveTransactionManager transactionManager(ReactiveMongoDatabaseFactory dbFactory) {
-            return new ReactiveMongoTransactionManager(dbFactory);
-        }
-
-        @Bean
-        @Override
-        public MongoClient reactiveMongoClient() {
-            return MongoClients.create(mongoDBContainer.getReplicaSetUrl());
-        }
-
-        @Override
-        protected String getDatabaseName() {
-            return DB_NAME;
-        }
-    }
+//    @ComponentScan
+//    static class TransConfig extends AbstractReactiveMongoConfiguration {
+//
+//        @Bean("reactiveTransactionManager")
+//        ReactiveTransactionManager transactionManager(ReactiveMongoDatabaseFactory dbFactory) {
+//            return new ReactiveMongoTransactionManager(dbFactory);
+//        }
+//
+//        @Bean
+//        @Override
+//        public MongoClient reactiveMongoClient() {
+//            return MongoClients.create(mongoDBContainer.getReplicaSetUrl());
+//        }
+//
+//        @Override
+//        protected String getDatabaseName() {
+//            return DB_NAME;
+//        }
+//    }
 
 
     @Autowired

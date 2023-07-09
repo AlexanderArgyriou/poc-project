@@ -4,7 +4,7 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.MongoCredential;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,10 +15,14 @@ import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRep
 
 @Configuration
 @EnableReactiveMongoRepositories
-@AllArgsConstructor
 public class MongoRepositoryConfiguration extends AbstractReactiveMongoConfiguration {
 
     private final MongoProperties mongoProperties;
+
+    @Autowired
+    public MongoRepositoryConfiguration(MongoProperties mongoProperties) {
+        this.mongoProperties = mongoProperties;
+    }
 
     @Override
     public MongoClient reactiveMongoClient() {
