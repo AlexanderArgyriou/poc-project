@@ -13,16 +13,13 @@ import reactor.core.publisher.Mono;
 public class HeaderPropagationFilter implements WebFilter {
     @Override
     @NonNull
-    public Mono<Void> filter(ServerWebExchange serverWebExchange,
-                             WebFilterChain webFilterChain) {
-        String dummyHeaderValue = serverWebExchange
-                .getRequest()
-                .getHeaders()
-                .getFirst("dummy");
-
-        serverWebExchange.getResponse()
-                .getHeaders().add("dummy", dummyHeaderValue);
-        return webFilterChain.filter(serverWebExchange);
+    public Mono<Void> filter(@NonNull ServerWebExchange serverWebExchange,
+                             @NonNull WebFilterChain webFilterChain) {
+       return Mono.deferContextual(ctx -> {
+            serverWebExchange.getResponse()
+                    .getHeaders().add("dummy", ctx.get("dummy"));
+            return webFilterChain.filter(serverWebExchange);
+        });
     }
 }
 

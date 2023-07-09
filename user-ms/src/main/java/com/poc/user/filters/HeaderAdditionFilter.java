@@ -7,18 +7,16 @@ import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
+import reactor.util.context.Context;
 
 @Component
 @Order(1)
 public class HeaderAdditionFilter implements WebFilter {
     @Override
     @NonNull
-    public Mono<Void> filter(ServerWebExchange serverWebExchange,
+    public Mono<Void> filter(@NonNull ServerWebExchange serverWebExchange,
                              WebFilterChain webFilterChain) {
-        serverWebExchange
-                .getRequest()
-                .mutate()
-                .header("dummy", "dummy header exists");
-        return webFilterChain.filter(serverWebExchange);
+        return webFilterChain.filter(serverWebExchange)
+                .contextWrite(Context.of("dummy", "dummy header exists"));
     }
 }
