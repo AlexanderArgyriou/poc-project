@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 
 import java.lang.annotation.*;
 
-@Operation(summary = "Edit a use (if used not exists it gets created with id specified)")
+@Operation(summary = "Edit a user (if used not exists it gets created with id specified)")
 @ApiResponses(value = { @ApiResponse(responseCode = "201", description = "User created",
         content = {@Content(mediaType = "application/json",schema =@Schema(implementation = UserResponse.class))}),
         @ApiResponse(responseCode = "400", description = "Invalid user data",
