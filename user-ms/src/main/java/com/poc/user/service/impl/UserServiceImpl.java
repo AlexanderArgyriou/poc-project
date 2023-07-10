@@ -70,7 +70,7 @@ public class UserServiceImpl implements UserService {
         //if resource with specified id does not exist, a new resource will be created
         return userRepository.findByIdAndActiveTrue(id)
                 .switchIfEmpty(Mono.defer(() -> {
-                    UserDocument userDocument =modelMapper.map(user, UserDocument.class);
+                    UserDocument userDocument = modelMapper.map(user, UserDocument.class);
                     userDocument.setId(id);
                     userDocument.setCreatedDateTime(Instant.now());
                     userDocument.setActive(true);
@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
 
     public Mono<UserResponse> deleteUser(String id) {
         return userRepository.findByIdAndActiveTrue(id)
-                .switchIfEmpty(Mono.error(new UserNotFoundException("Could not find user to deleted")))
+                .switchIfEmpty(Mono.error(new UserNotFoundException("Could not find user to delete")))
                 .flatMap(entity -> {
                     entity.setActive(false);
                     entity.setDeactivatedTimestamp(Instant.now());
