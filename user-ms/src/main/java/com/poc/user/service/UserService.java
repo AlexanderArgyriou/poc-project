@@ -24,21 +24,10 @@ public interface UserService {
 	 */
 	public Mono<UserResponse> upsertUser(String id, UserInfo user);
 
-
-	/**
-	 * if particular users exist update their info, otherwise creates new users with ids provided
-	 */
-	public Flux<UserResponse> upsertUsers(List<ParticularUserInfo> users);
-
 	/**
 	 * soft deletes a user with provided id
 	 */
 	public Mono<UserResponse> deleteUser(String id);
-
-	/**
-	 * soft deletes users with provided ids
-	 */
-	public Flux<UserResponse> deleteUsers(List<String> ids);
 
 	public Mono<UserResponse> createUser(UserInfo user);
 }

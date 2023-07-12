@@ -9,7 +9,7 @@ import org.springframework.web.server.WebFilterChain;
 import reactor.core.publisher.Mono;
 
 @Component
-@Order(1)
+@Order(2)
 public class HeaderPropagationFilter implements WebFilter {
     @Override
     @NonNull

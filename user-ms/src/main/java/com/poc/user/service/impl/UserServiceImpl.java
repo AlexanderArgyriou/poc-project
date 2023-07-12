@@ -4,7 +4,6 @@
 package com.poc.user.service.impl;
 
 
-import com.poc.user.domain.request.ParticularUserInfo;
 import com.poc.user.domain.request.UserInfo;
 import com.poc.user.domain.response.UserResponse;
 import com.poc.user.exception.UserNotFoundException;
@@ -19,11 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Implementation of {@link UserService UserService.class}
@@ -51,18 +48,17 @@ public class UserServiceImpl implements UserService {
                 .switchIfEmpty(Mono.error(new UserNotFoundException("Could not find specific user")));
     }
 
-    @Override
-    public Flux<UserResponse> readUsers(List<String> ids) {
-        return userRepository.findAllByIdInAndActiveTrue(ids).map(u -> modelMapper.map(u, UserResponse.class));
+    static void dummyLog(String message, String correlation) {
+        String threadName = Thread.currentThread().getName();
+        String threadNameTail = threadName.substring(
+                Math.max(0, threadName.length() - 10));
+        System.out.printf("[%10s][%20s] %s%n",
+                threadNameTail, correlation, message);
     }
 
     @Override
-    public Mono<UserResponse> createUser(UserInfo user) {
-        UserDocument userDocument = modelMapper.map(user, UserDocument.class);
-        userDocument.setCreatedDateTime(Instant.now());
-        userDocument.setActive(true);
-        return userRepository.save(userDocument)
-                .flatMap(savedEntity -> Mono.just(modelMapper.map(savedEntity, UserResponse.class)));
+    public Flux<UserResponse> readUsers(List<String> ids) {
+        return userRepository.findAllByIdInAndActiveTrue(ids).flatMap(u -> Mono.just(modelMapper.map(u, UserResponse.class)));
     }
 
 
@@ -84,12 +80,13 @@ public class UserServiceImpl implements UserService {
                 .map(savedEntity -> modelMapper.map(savedEntity, UserResponse.class));
     }
 
-    static void dummyLog(String message, String correlation) {
-        String threadName = Thread.currentThread().getName();
-        String threadNameTail = threadName.substring(
-                Math.max(0, threadName.length() - 10));
-        System.out.printf("[%10s][%20s] %s%n",
-                threadNameTail, correlation, message);
+    @Override
+    public Mono<UserResponse> createUser(UserInfo user) {
+        UserDocument userDocument = modelMapper.map(user, UserDocument.class);
+        userDocument.setCreatedDateTime(Instant.now());
+        userDocument.setActive(true);
+        return userRepository.save(userDocument)
+                .map(savedEntity -> modelMapper.map(savedEntity, UserResponse.class));
     }
 
     public Mono<UserResponse> deleteUser(String id) {
@@ -98,38 +95,7 @@ public class UserServiceImpl implements UserService {
                 .flatMap(entity -> {
                     entity.setActive(false);
                     entity.setDeactivatedTimestamp(Instant.now());
-                    return userRepository.save(entity);
-                })
-                .map(savedEntity -> modelMapper.map(savedEntity, UserResponse.class));
-
-    }
-
-    public Flux<UserResponse> deleteUsers(List<String> ids) {
-        return userRepository.findAllByIdInAndActiveTrue(ids)
-                . switchIfEmpty(Mono.error(new UserNotFoundException("Could not find user to delete")))
-                .collectList()
-                .flatMapMany(entities -> {
-                    entities.forEach(entity -> {
-                        entity.setActive(false);
-                        entity.setDeactivatedTimestamp(Instant.now());
-                    });
-                    return userRepository.saveAll(entities)
-                            .doOnNext(entity -> log.info("Entity with id: {} deleted successfully", entity.getId()));
-                })
-                .map(entity -> modelMapper.map(entity, UserResponse.class));
-
-    }
-
-    public Flux<UserResponse> upsertUsers(List<ParticularUserInfo> users) {
-        return Flux.fromIterable(users)
-                .filter(Objects::nonNull)
-                .flatMap(user ->
-                        Mono.deferContextual(contextView -> {
-                            dummyLog("upsert user called in another threadpool,",
-                                    contextView.get("dummy"));
-                            return upsertUser(user.getId(), user);
-                        }))
-                .subscribeOn(Schedulers.boundedElastic())
-                .log();
+                    return Mono.just(modelMapper.map(userRepository.save(entity), UserResponse.class));
+                });
     }
 }

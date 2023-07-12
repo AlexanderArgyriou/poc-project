@@ -63,24 +63,9 @@ public class UserController {
 		}
 
 		@ResponseStatus(HttpStatus.OK)
-		@DeleteMapping()
-		@OpenApiDeleteUsers
-		public Flux<UserResponse> deleteUsers(@RequestParam(name="id") List<String> ids){
-			return userService.deleteUsers(ids);
-		}
-
-		@ResponseStatus(HttpStatus.OK)
 		@PutMapping("/{id}")
 		@OpenApiEditUser
 		public Mono<UserResponse> upsertUser(@PathVariable String id, @Valid @RequestBody UserInfo user) {
 			return userService.upsertUser(id, user);
-		}
-
-		@ResponseStatus(HttpStatus.OK)
-		@PutMapping()
-		@OpenApiEditUsers
-		public Flux<UserResponse> upsertUsers(@RequestBody @NotEmpty(message = "User info list cannot be empty.")
-													  @Valid UserInfoList<ParticularUserInfo> users) {
-			return userService.upsertUsers(users);
 		}
 }
