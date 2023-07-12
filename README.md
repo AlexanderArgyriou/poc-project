@@ -33,7 +33,7 @@ No stress testing nor a frontend has been implemented for this project.
 
 ## Design and Architecture
 
-![pocArchitecture](https://github.com/dideliba/poc-project/assets/60351395/4a5d8abe-6549-443b-9b60-857a5429571e)
+![user-ms-diagram.png](user-ms-diagram.png)
 
 User service is backed by a mongoDB as persistent storage and all interactions with the DB have been implemented
 in a non-blocking  reactive way, leveraging Flux and Mono publishers.
