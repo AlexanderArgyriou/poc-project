@@ -30,4 +30,9 @@ public interface UserService {
 	public Mono<UserResponse> deleteUser(String id);
 
 	public Mono<UserResponse> createUser(UserInfo user);
+
+	/**
+	 * if particular users exist update their info, otherwise creates new users with ids provided
+	 */
+	public Flux<UserResponse> upsertUsers(List<ParticularUserInfo> users);
 }

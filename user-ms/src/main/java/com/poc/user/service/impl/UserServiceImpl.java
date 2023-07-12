@@ -4,6 +4,7 @@
 package com.poc.user.service.impl;
 
 
+import com.poc.user.domain.request.ParticularUserInfo;
 import com.poc.user.domain.request.UserInfo;
 import com.poc.user.domain.response.UserResponse;
 import com.poc.user.exception.UserNotFoundException;
@@ -18,9 +19,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Implementation of {@link UserService UserService.class}
@@ -78,6 +81,19 @@ public class UserServiceImpl implements UserService {
                     return userRepository.save(entity);
                 })
                 .map(savedEntity -> modelMapper.map(savedEntity, UserResponse.class));
+    }
+
+    public Flux<UserResponse> upsertUsers(List<ParticularUserInfo> users) {
+        return Flux.fromIterable(users)
+                .filter(Objects::nonNull)
+                .flatMap(user ->
+                        Mono.deferContextual(contextView -> {
+                            dummyLog("upsert user called in another threadpool,",
+                                    contextView.get("dummy"));
+                            return upsertUser(user.getId(), user);
+                        }))
+                .subscribeOn(Schedulers.boundedElastic())
+                .log();
     }
 
     @Override

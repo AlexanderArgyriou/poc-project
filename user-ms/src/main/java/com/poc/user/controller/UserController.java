@@ -6,6 +6,9 @@ import com.poc.user.domain.request.UserInfo;
 import com.poc.user.domain.request.UserInfoList;
 import com.poc.user.domain.response.UserResponse;
 import com.poc.user.service.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,10 +16,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import io.swagger.v3.oas.annotations.tags.Tag;
-
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotEmpty;
 import java.util.List;
 
 /**
@@ -58,14 +57,22 @@ public class UserController {
 		@ResponseStatus(HttpStatus.OK)
 		@DeleteMapping("/{id}")
 		@OpenApiDeleteUser
-		public Mono<UserResponse> deleteUser(@PathVariable String id){
-				return userService.deleteUser(id);
+		public Mono<UserResponse> deleteUser(@PathVariable String id) {
+			return userService.deleteUser(id);
 		}
 
-		@ResponseStatus(HttpStatus.OK)
-		@PutMapping("/{id}")
-		@OpenApiEditUser
-		public Mono<UserResponse> upsertUser(@PathVariable String id, @Valid @RequestBody UserInfo user) {
-			return userService.upsertUser(id, user);
-		}
+	@ResponseStatus(HttpStatus.OK)
+	@PutMapping("/{id}")
+	@OpenApiEditUser
+	public Mono<UserResponse> upsertUser(@PathVariable String id, @Valid @RequestBody UserInfo user) {
+		return userService.upsertUser(id, user);
+	}
+
+	@ResponseStatus(HttpStatus.OK)
+	@PutMapping()
+	@OpenApiEditUsers
+	public Flux<UserResponse> upsertUsers(@RequestBody @NotEmpty(message = "User info list cannot be empty.")
+										  @Valid UserInfoList<ParticularUserInfo> users) {
+		return userService.upsertUsers(users);
+	}
 }
