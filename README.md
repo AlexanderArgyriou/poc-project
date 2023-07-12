@@ -24,7 +24,7 @@ application specif parameters can be configured on application.yml resource of e
 After successful deployment of all microservices you can check the OpenApi documentation 
 and try the API operations.
 
-User API can be accessed here http://localhost:9080/webjars/swagger-ui/index.html
+User API can be accessed here: http://localhost:9080/webjars/swagger-ui/index.html
 
 All services run locally on the host network so port collision might occur if a port is already 
 used on the host machine. Please check docker-compose.yml for more details on ports used.
