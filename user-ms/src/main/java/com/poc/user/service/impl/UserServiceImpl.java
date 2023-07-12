@@ -75,12 +75,12 @@ public class UserServiceImpl implements UserService {
                     userDocument.setActive(true);
                     return userRepository.save(userDocument);
                 }))
-                .flatMap(entity -> {
-                    BeanUtils.copyProperties(user, entity);
-                    entity.setLastModifiedDateTime(Instant.now());
-                    return userRepository.save(entity);
+                .flatMap(document -> {
+                    BeanUtils.copyProperties(user, document);
+                    document.setLastModifiedDateTime(Instant.now());
+                    return userRepository.save(document);
                 })
-                .map(savedEntity -> modelMapper.map(savedEntity, UserResponse.class));
+                .map(savedDocument -> modelMapper.map(savedDocument, UserResponse.class));
     }
 
     public Flux<UserResponse> upsertUsers(List<ParticularUserInfo> users) {
@@ -102,16 +102,16 @@ public class UserServiceImpl implements UserService {
         userDocument.setCreatedDateTime(Instant.now());
         userDocument.setActive(true);
         return userRepository.save(userDocument)
-                .map(savedEntity -> modelMapper.map(savedEntity, UserResponse.class));
+                .map(savedDocument -> modelMapper.map(savedDocument, UserResponse.class));
     }
 
     public Mono<UserResponse> deleteUser(String id) {
         return userRepository.findByIdAndActiveTrue(id)
                 .switchIfEmpty(Mono.error(new UserNotFoundException("Could not find user to delete")))
-                .flatMap(entity -> {
-                    entity.setActive(false);
-                    entity.setDeactivatedTimestamp(Instant.now());
-                    return Mono.just(modelMapper.map(userRepository.save(entity), UserResponse.class));
+                .flatMap(document -> {
+                    document.setActive(false);
+                    document.setDeactivatedTimestamp(Instant.now());
+                    return Mono.just(modelMapper.map(userRepository.save(document), UserResponse.class));
                 });
     }
 }
