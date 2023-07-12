@@ -13,7 +13,7 @@ import java.time.Instant;
 
 @RestControllerAdvice
 @Slf4j
-public class ControllerAdvice {
+public class UserGlobalControllerAdvice {
 
     @ExceptionHandler(UserNotFoundException.class)
     public Mono<ResponseEntity<Object>> handleUserNotFoundException(UserNotFoundException exception, ServerWebExchange exchange) {
