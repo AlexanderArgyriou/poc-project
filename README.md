@@ -2,13 +2,6 @@
 
 User ms is a Spring Boot 3 application that performs CRUD operations over a mongo db.
 
-## Installation
-
-For successful installation JDK 17, Docker & Docker compose are required.
-
-In the project root directory  **poc-project** execute buidAndDeploy.sh
-This script builds the application, runs integration tests, creates docker images and finally
-spins up the dockerized microservices.
 
 ## Installation
 
